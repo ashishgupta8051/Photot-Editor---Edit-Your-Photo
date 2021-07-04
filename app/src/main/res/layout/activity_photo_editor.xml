@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".PhotoEditorActivity"
+    android:background="@drawable/background_image">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Photo Editor"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:layout_marginTop="80dp"
+        android:fontFamily="casual"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5"/>
+
+    <ImageView
+        android:id="@+id/camera"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@drawable/camera"
+        android:layout_marginBottom="100dp"
+        android:layout_marginLeft="50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="@+id/guideline"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Camera"
+        android:textSize="12sp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:fontFamily="monospace"
+        app:layout_constraintTop_toBottomOf="@+id/camera"
+        app:layout_constraintLeft_toLeftOf="@+id/camera"
+        app:layout_constraintRight_toRightOf="@+id/camera"/>
+
+
+    <ImageView
+        android:id="@+id/gallery"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@drawable/gallery"
+        android:layout_marginBottom="100dp"
+        android:layout_marginRight="50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Gallery"
+        android:textSize="12sp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:fontFamily="monospace"
+        app:layout_constraintTop_toBottomOf="@+id/gallery"
+        app:layout_constraintLeft_toLeftOf="@+id/gallery"
+        app:layout_constraintRight_toRightOf="@+id/gallery"/>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
