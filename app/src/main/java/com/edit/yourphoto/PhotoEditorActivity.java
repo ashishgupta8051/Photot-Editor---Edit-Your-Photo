@@ -13,16 +13,21 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -32,6 +37,7 @@ import android.widget.Toast;
 
 import com.dsphotoeditor.sdk.activity.DsPhotoEditorActivity;
 import com.dsphotoeditor.sdk.utils.DsPhotoEditorConstants;
+import com.edit.yourphoto.utils.InternetCheckService;
 import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.FullScreenContentCallback;
@@ -57,12 +63,15 @@ public class PhotoEditorActivity extends AppCompatActivity {
     private Uri cameraImageUri;
     private Bitmap cameraImageMap;
     private InterstitialAd mInterstitialAd;
-    private static final String AD_UNIT_ID = "ca-app-pub-7419751706380309/2809326434";
+    private static final String AD_UNIT_ID = "ca-app-pub-6045011449826065/5460723709";
+    private BroadcastReceiver broadcastReceiver = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_editor);
+
+        broadcastReceiver = new InternetCheckService();
 
         //this.getWindow().setStatusBarColor(Color.parseColor("#6495ED"));
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
@@ -186,6 +195,25 @@ public class PhotoEditorActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        IntentFilter intentFilter =  new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(broadcastReceiver,intentFilter);
+
+        new Handler(Looper.myLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                showAd();
+            }
+        },1000 * 60);
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unregisterReceiver(broadcastReceiver);
+    }
+
+    private void showAd() {
         AdRequest adRequest = new AdRequest.Builder().build();
         InterstitialAd.load(
                 this,
@@ -216,7 +244,7 @@ public class PhotoEditorActivity extends AppCompatActivity {
                                     }
                                 });
 
-                        if (interstitialAd != null) {
+                        if (mInterstitialAd != null) {
                             interstitialAd.show(PhotoEditorActivity.this);
                         } else {
                             Toast.makeText(getApplicationContext(), "Ad did not load", Toast.LENGTH_SHORT).show();
@@ -238,18 +266,6 @@ public class PhotoEditorActivity extends AppCompatActivity {
                                 .show();
                     }
                 });
-    }
-
-    private void openCamera() {
-        ContentValues values = new ContentValues();
-        values.put(MediaStore.Images.Media.TITLE,"New Picture");
-        values.put(MediaStore.Images.Media.DESCRIPTION,"From the camera");
-        cameraImageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,values);
-
-        //Camera Intent
-        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, cameraImageUri);
-        cameraLauncher.launch(cameraIntent);
     }
 
     private void requestPermission() {
@@ -296,5 +312,17 @@ public class PhotoEditorActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         finishAffinity();
+    }
+
+    private void openCamera() {
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.TITLE,"New Picture");
+        values.put(MediaStore.Images.Media.DESCRIPTION,"From the camera");
+        cameraImageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,values);
+
+        //Camera Intent
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, cameraImageUri);
+        cameraLauncher.launch(cameraIntent);
     }
 }
