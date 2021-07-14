@@ -63,7 +63,7 @@ public class PhotoEditorActivity extends AppCompatActivity {
     private Uri cameraImageUri;
     private Bitmap cameraImageMap;
     private InterstitialAd mInterstitialAd;
-    private static final String AD_UNIT_ID = "ca-app-pub-6045011449826065/5460723709";
+    private static final String AD_UNIT_ID = "ca-app-pub-6045011449826065/6240287055";
     private BroadcastReceiver broadcastReceiver = null;
 
     @Override
@@ -204,7 +204,6 @@ public class PhotoEditorActivity extends AppCompatActivity {
                 showAd();
             }
         },1000 * 60);
-
     }
 
     @Override
