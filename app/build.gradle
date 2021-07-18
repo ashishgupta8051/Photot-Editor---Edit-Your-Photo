@@ -10,8 +10,8 @@ android {
         applicationId "com.edit.yourphoto"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 4
-        versionName "1.0.3"
+        versionCode 5
+        versionName "1.0.4"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -48,8 +48,5 @@ dependencies {
     //Ds Photo Editor
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation(name:'ds-photo-editor-sdk-v10', ext:'aar')
-
-    //Google Ad
-    implementation 'com.google.android.gms:play-services-ads:20.2.0'
 
 }

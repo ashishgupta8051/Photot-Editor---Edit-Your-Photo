@@ -11,11 +11,9 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -26,8 +24,6 @@ import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -38,19 +34,7 @@ import android.widget.Toast;
 import com.dsphotoeditor.sdk.activity.DsPhotoEditorActivity;
 import com.dsphotoeditor.sdk.utils.DsPhotoEditorConstants;
 import com.edit.yourphoto.utils.InternetCheckService;
-import com.google.android.gms.ads.AdError;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.FullScreenContentCallback;
-import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
-import com.google.android.gms.ads.interstitial.InterstitialAd;
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 
-import java.io.ByteArrayOutputStream;
-
-import static android.content.ContentValues.TAG;
 
 public class PhotoEditorActivity extends AppCompatActivity {
     private ImageView cameraImage,galleryImage;
@@ -62,8 +46,6 @@ public class PhotoEditorActivity extends AppCompatActivity {
     private Uri finalUri;
     private Uri cameraImageUri;
     private Bitmap cameraImageMap;
-    private InterstitialAd mInterstitialAd;
-    private static final String AD_UNIT_ID = "ca-app-pub-6045011449826065/6240287055";
     private BroadcastReceiver broadcastReceiver = null;
 
     @Override
@@ -80,13 +62,6 @@ public class PhotoEditorActivity extends AppCompatActivity {
 
         cameraImage = findViewById(R.id.camera);
         galleryImage = findViewById(R.id.gallery);
-
-        //Initialize MobileAds
-        MobileAds.initialize(this, new OnInitializationCompleteListener() {
-            @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {
-            }
-        });
 
         galleryImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -197,13 +172,6 @@ public class PhotoEditorActivity extends AppCompatActivity {
         super.onStart();
         IntentFilter intentFilter =  new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         registerReceiver(broadcastReceiver,intentFilter);
-
-        new Handler(Looper.myLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                showAd();
-            }
-        },1000 * 60);
     }
 
     @Override
@@ -212,60 +180,6 @@ public class PhotoEditorActivity extends AppCompatActivity {
         unregisterReceiver(broadcastReceiver);
     }
 
-    private void showAd() {
-        AdRequest adRequest = new AdRequest.Builder().build();
-        InterstitialAd.load(
-                this,
-                AD_UNIT_ID,
-                adRequest,
-                new InterstitialAdLoadCallback() {
-                    @Override
-                    public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
-                        mInterstitialAd = interstitialAd;
-                        Log.i(TAG, "onAdLoaded");
-                        interstitialAd.setFullScreenContentCallback(
-                                new FullScreenContentCallback() {
-                                    @Override
-                                    public void onAdDismissedFullScreenContent() {
-                                        mInterstitialAd = null;
-                                        Log.d("TAG", "The ad was dismissed.");
-                                    }
-
-                                    @Override
-                                    public void onAdFailedToShowFullScreenContent(AdError adError) {
-                                        mInterstitialAd = null;
-                                        Log.d("TAG", "The ad failed to show.");
-                                    }
-
-                                    @Override
-                                    public void onAdShowedFullScreenContent() {
-                                        Log.d("TAG", "The ad was shown.");
-                                    }
-                                });
-
-                        if (mInterstitialAd != null) {
-                            interstitialAd.show(PhotoEditorActivity.this);
-                        } else {
-                            Toast.makeText(getApplicationContext(), "Ad did not load", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                        // Handle the error
-                        Log.i(TAG, loadAdError.getMessage());
-                        mInterstitialAd = null;
-
-                        @SuppressLint("DefaultLocale") String error =
-                                String.format(
-                                        "domain: %s, code: %d, message: %s",
-                                        loadAdError.getDomain(), loadAdError.getCode(), loadAdError.getMessage());
-                        Toast.makeText(
-                                PhotoEditorActivity.this, "onAdFailedToLoad() with error: " + error, Toast.LENGTH_SHORT)
-                                .show();
-                    }
-                });
-    }
 
     private void requestPermission() {
         if (ActivityCompat.shouldShowRequestPermissionRationale(PhotoEditorActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
